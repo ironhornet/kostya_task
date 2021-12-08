@@ -1,32 +1,50 @@
 import React from "react";
-import { rankingListData } from './rankingList.data';
 
 const RankingList = (props) => {
-  const { onCheck, companyList } = props
-    
+  const { 
+      onCheck, 
+      dataFromServer, 
+      disable,
+    } = props;
+
   const mapRankingList = () => {
-    return rankingListData.map((item) => (
-        <li 
-            key={item.id} 
-            style={{
-                display: "flex", 
-                justifyContent: "space-between",
-            }}
+    return dataFromServer?.map((item) => (
+      <tr key={item.id}>
+        <td
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+          }}
         >
-            {item.companyName} 
-            <input 
-                type="checkbox" 
-                id={item.id} 
-                value={item.companyName} 
-                onChange={(event) => onCheck(event, item)}
-                disabled={(companyList.length === 5 && !companyList.find((company) => company.id === item.id))}
-            />
-        </li>
+          {item.title}
+          <input
+            type="checkbox"
+            id={item.id}
+            onChange={(event) => onCheck(event, item)}
+            disabled={disable(item)}
+          />
+        </td>
+        <td style={{ 
+            width: "20px", 
+            height: "20px", 
+            backgroundColor:`${item.color}` 
+        }}>
+
+        </td>
+      </tr>
     ));
   };
 
-  return  <section>
-            <ul>{mapRankingList()}</ul>
-          </section> 
+  return (
+    <table>
+      <thead>
+        <tr style={{display: "flex", justifyContent: "space-between"}}>
+          <th>Company name</th>
+          <th>Compare</th>
+        </tr>
+      </thead>
+      <tbody>{mapRankingList()}</tbody>
+    </table>
+  );
 };
 export default RankingList;

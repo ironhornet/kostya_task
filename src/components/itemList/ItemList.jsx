@@ -6,7 +6,7 @@ const ItemList = (props) => {
   const mapItemList = () =>
     data.map((company) => (
       <li key={company.id}>
-        {company.companyName}
+        {company.title}
         <div
           style={{
             width: "20px",
