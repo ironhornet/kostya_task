@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 
 import style from "./main.style.css";
 import ItemList from "../components/itemList/ItemList";
@@ -9,76 +9,79 @@ import Company from "./main.classes";
 
 const Main = () => {
   const [companyList, setCompanyList] = useState([]);
-  const [freeHexColors, setfreeHexColors] = useState(HEX_COLORS_ARRAY); //use ref
   const [dataFromServer, setDataFromServer] = useState(null);
+  const colorsArray = useRef(HEX_COLORS_ARRAY);
 
   const { data, loading, error } = useFetch(fetchUrl);
 
-
   useEffect(() => {
-    const dataFromServerAdapter = (data) => {
-      if (!data) return;
-      return data.map((rawCompany) => new Company(rawCompany));
-    };
-    setDataFromServer(dataFromServerAdapter(data));
+    setDataFromServer(data);
   }, [data]);
 
-  const handleCheckBoxChange = (event, item) => {
-    if (!event || !event.target) return;
-    const { checked } = event.target;
+  const replaceItemInDataFromServer = (item) => {
+    const index = dataFromServer.indexOf(item);
+    if (index !== -1) {
+      const temp = [...dataFromServer];
+      temp[index] = item;
+      setDataFromServer(temp);
+    }
 
-    if (checked && companyList.length <= 5 && freeHexColors.length) {
-      addColor(item);
+    const tempCompanyList = dataFromServer.reduce((acc, item) => {
+      if (item.isActive) {
+        return [...acc, item];
+      }
+      return acc;
+    }, []);
+    setCompanyList(tempCompanyList);
+  };
+
+  const handleCheckBoxChange = (checked, id) => {
+    const item = dataFromServer.find((item) => item.id === +id);
+    if (checked && companyList.length <= 5) {
+      addToCompareList(item);
       return;
     }
-    removeColor(item)
-    removeFromCompareList(item.id);
-
+    removeColor(item);
+    removeFromCompareList(item);
   };
 
-  const addColor = (item) => {
-    setCompanyList([...companyList, { ...item, color: freeHexColors[0] }]);  
-    item.addColor(freeHexColors[0])
-    
-
-    const filteredHexArray = freeHexColors.filter(
-      (color) => color !== freeHexColors[0]
-    );
-    setfreeHexColors(filteredHexArray);
+  const addToCompareList = (item) => {
+    addColor(item);
+    item.undisable();
+    replaceItemInDataFromServer(item);
   };
 
+  const addColor = (item) => item.addColor(colorsArray.current.pop());
   const removeColor = (item) => {
     const foundCompany = companyList.find((company) => company.id === item.id);
     if (foundCompany) {
-      setfreeHexColors([...freeHexColors, foundCompany.color]);
-      item.deleteColor()
+      colorsArray.current = [...colorsArray.current, foundCompany.color];
+      item.deleteColor(foundCompany.color);
     }
-  }
-
-  const removeFromCompareList = (id) => {
-    const filteredList = companyList.filter((company) => company.id !== id);
-    setCompanyList(filteredList);
-    
   };
 
-  const disable = (item) => {
+  const removeFromCompareList = (item) => {
+    item.disable();
+    replaceItemInDataFromServer(item);
+  };
+
+  const disableCheckbox = (itemId) => {
     if (
       companyList.length === 5 &&
-      !companyList.find((company) => company.id === item.id)
+      !companyList.find((company) => company.id === itemId)
     ) {
       return true;
     }
   };
-
   if (loading) return <h1>Loading...</h1>;
 
   return (
     <main className="main-container">
-      <ItemList data={companyList}/>
+      <ItemList data={companyList} />
       <RankingList
         onCheck={handleCheckBoxChange}
         dataFromServer={dataFromServer}
-        disable={disable}
+        disableCheckbox={disableCheckbox}
       />
     </main>
   );

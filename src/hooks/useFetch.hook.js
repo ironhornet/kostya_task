@@ -1,5 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
+
+import Company from "../pages/main.classes"
 
 export const useFetch = (url) => {
     const [data, setData] = useState(null);
@@ -8,13 +10,14 @@ export const useFetch = (url) => {
 
     useEffect(() => {
         setLoading(true);
-        setData(null);
+        // setData(null);
         setError(null);
         const source = axios.CancelToken.source();
         axios.get(url, { cancelToken: source.token })
             .then(response => {
-                setLoading(false);
-                setData(response.data)
+                setLoading(false)
+                const companiesData = response.data.map((item) => (new Company(item)));
+                setData(companiesData);
             })
             .catch(err => {
                 setLoading(false)

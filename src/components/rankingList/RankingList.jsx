@@ -1,44 +1,50 @@
 import React from "react";
+import style from "./rankingList.style.css"
 
 const RankingList = (props) => {
-  const { 
-      onCheck, 
-      dataFromServer, 
-      disable,
-    } = props;
+  const { onCheck, dataFromServer, disableCheckbox } = props;
 
   const mapRankingList = () => {
-    return dataFromServer?.map((item) => (
-      <tr key={item.id}>
-        <td
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-          }}
-        >
-          {item.title}
-          <input
-            type="checkbox"
-            id={item.id}
-            onChange={(event) => onCheck(event, item)}
-            disabled={disable(item)}
-          />
-        </td>
-        <td style={{ 
-            width: "20px", 
-            height: "20px", 
-            backgroundColor:`${item.color}` 
-        }}>
-
-        </td>
-      </tr>
-    ));
+    const handleChange = (event) => {
+      const { value, checked } = event.target;
+      onCheck(checked, value);
+    };
+    
+    return dataFromServer?.map((item) => {
+      return (
+        <tr key={item.id}>
+          <td className="table__title">
+            {item.title}
+            <label>
+              <input
+                className="filled-in"
+                type="checkbox"
+                checked={item.isActive}
+                id={item.id}
+                value={item.id}
+                onChange={handleChange}
+                disabled={disableCheckbox(item.id)}
+              />
+              <span></span>
+            </label>
+          </td>
+          <td>
+            <span
+              className="collored__circle"
+              style={{
+                backgroundColor: `${item.color}`,
+              }}
+            ></span>
+          </td>
+        </tr>
+      );
+    });
   };
 
   return (
     <table>
       <thead>
-        <tr style={{display: "flex", justifyContent: "space-between"}}>
+        <tr className="table__title">
           <th>Company name</th>
           <th>Compare</th>
         </tr>

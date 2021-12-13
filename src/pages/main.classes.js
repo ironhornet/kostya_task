@@ -1,6 +1,6 @@
-class Company  {
+class Company {
     isActive = false;
-    color;
+    #color;
 
     constructor(data) {
         this.title = data.title;
@@ -8,16 +8,19 @@ class Company  {
         this.userId = data.userId;
     }
 
-    disable(){
+    disable() {
         this.isActive = false;
     }
-    undisable(){
-        this.isActive = true; 
+    undisable() {
+        this.isActive = true;
     }
-    addColor(color){
+    addColor(color) {
         this.color = color;
     }
-    deleteColor(){
+    getColor() {
+        return this.color;
+    }
+    deleteColor() {
         this.color = '';
     }
     formatedTitle() {

@@ -1,26 +1,36 @@
 import React from "react";
 
+import style from "./itemList.style.css";
+
 const ItemList = (props) => {
   const { data } = props;
 
-  const mapItemList = () =>
+  const mapCompanyList = () =>
     data.map((company) => (
-      <li key={company.id}>
-        {company.title}
-        <div
-          style={{
-            width: "20px",
-            height: "20px",
-            backgroundColor: `${company.color}`,
-            borderRadius: "50%",
-          }}
-        ></div>
-      </li>
+      <tr key={company.id}>
+        <td className="table__title">
+          {company.title}
+          <span
+            className="colored__circle"
+            style={{
+              backgroundColor: `${company.color}`,
+            }}
+          ></span>
+        </td>
+      </tr>
     ));
 
-  return <ul style={{ height: "200px" }}>
-            {mapItemList()}
-         </ul>;
+  return (
+    <table>
+      <thead>
+        <tr className="table__title">
+          <th>Company name</th>
+          <th>Compare</th>
+        </tr>
+      </thead>
+      <tbody className="table__body">{mapCompanyList()}</tbody>
+    </table>
+  );
 };
 
 export default ItemList;

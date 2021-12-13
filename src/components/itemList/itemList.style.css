@@ -1,0 +1,13 @@
+.table__title {
+  display: "flex";
+  justify-content: space-between;
+}
+.table__body {
+  height: 270px;
+}
+.colored__circle {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  width: "20px";
+}
